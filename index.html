@@ -2,145 +2,171 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>Lyric Downloader Pro | BR</title>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        :root { --bg: #050505; --accent: #1DB954; --card: #121212; --border: rgba(255,255,255,0.1); }
-        body { background: var(--bg); color: white; font-family: 'Plus Jakarta Sans', sans-serif; margin: 0; padding: 20px; }
-        .container { max-width: 500px; margin: 0 auto; }
-        .header { text-align: center; margin-bottom: 30px; }
-        h1 { font-weight: 800; font-size: 2rem; margin: 0; background: linear-gradient(135deg, #fff, #444); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .search-box { background: var(--card); border: 1px solid var(--border); padding: 25px; border-radius: 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.5); }
-        .controls { display: flex; gap: 10px; margin-bottom: 15px; }
-        select { background: #1a1a1a; color: var(--accent); border: 1px solid var(--border); border-radius: 12px; padding: 10px; font-weight: 700; outline: none; }
-        input { flex: 1; background: #1a1a1a; border: 1px solid var(--border); padding: 15px; border-radius: 12px; color: white; outline: none; }
-        #results { margin-top: 10px; background: #181818; border-radius: 15px; overflow: hidden; display: none; border: 1px solid var(--border); }
-        .item { display: flex; align-items: center; padding: 12px; cursor: pointer; border-bottom: 1px solid var(--border); transition: 0.2s; }
-        .item:hover { background: #222; }
-        .item img { width: 50px; height: 50px; border-radius: 8px; margin-right: 15px; background: #333; }
-        .item-info b { display: block; font-size: 0.85rem; color: #fff; }
-        .item-info span { font-size: 0.75rem; color: #888; }
-        .console { margin-top: 20px; font-family: monospace; font-size: 0.7rem; color: #1DB954; padding: 10px; background: #000; border-radius: 10px; display: none; }
-        footer { text-align: center; margin-top: 40px; border-top: 1px solid var(--border); padding-top: 20px; }
-        .author { color: #eee; font-weight: 800; font-size: 0.8rem; display: block; margin-top: 5px; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: radial-gradient(circle at 10% 20%, #070707, #000000); font-family: 'Plus Jakarta Sans', sans-serif; color: #f0f0f0; min-height: 100vh; padding: 24px 16px; }
+        .container { max-width: 680px; margin: 0 auto; }
+        .header { text-align: center; margin-bottom: 32px; }
+        h1 { font-weight: 800; font-size: 2.5rem; background: linear-gradient(135deg, #FFFFFF 0%, #B0FFC0 60%, #1DB954 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: -0.5px; margin-bottom: 6px; }
+        .badge { display: inline-block; background: rgba(29, 185, 84, 0.2); backdrop-filter: blur(4px); border-radius: 40px; padding: 6px 14px; font-size: 0.7rem; font-weight: 600; letter-spacing: 1.5px; color: #1DB954; border: 0.5px solid rgba(29, 185, 84, 0.4); }
+        .search-card { background: rgba(18, 18, 18, 0.85); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 32px; padding: 24px 20px; box-shadow: 0 25px 40px -12px rgba(0, 0, 0, 0.6); transition: all 0.2s ease; }
+        .controls { display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
+        .mode-select { background: #0c0c0c; border: 1px solid #2a2a2a; border-radius: 60px; padding: 12px 18px; font-weight: 700; font-size: 0.85rem; color: #1DB954; cursor: pointer; outline: none; font-family: 'Plus Jakarta Sans', monospace; transition: all 0.2s; }
+        .mode-select:hover { border-color: #1DB954; background: #111; }
+        .search-input { flex: 1; background: #0c0c0c; border: 1px solid #2a2a2a; border-radius: 60px; padding: 12px 20px; font-size: 0.95rem; color: white; outline: none; font-weight: 500; transition: all 0.2s; }
+        .search-input:focus { border-color: #1DB954; box-shadow: 0 0 0 2px rgba(29, 185, 84, 0.2); }
+        #results { margin-top: 20px; display: none; flex-direction: column; gap: 10px; max-height: 380px; overflow-y: auto; border-radius: 20px; }
+        .result-item { background: rgba(25, 25, 25, 0.9); border: 1px solid #262626; border-radius: 18px; padding: 12px 16px; display: flex; align-items: center; gap: 16px; cursor: pointer; transition: all 0.2s ease; backdrop-filter: blur(2px); }
+        .result-item:hover { background: #1f1f1f; transform: translateX(4px); border-color: #1DB954; }
+        .thumb { width: 52px; height: 52px; background: #1e1e1e; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; box-shadow: 0 4px 10px rgba(0,0,0,0.3); object-fit: cover; }
+        .item-info { flex: 1; }
+        .item-info strong { font-size: 0.95rem; font-weight: 700; display: block; color: white; }
+        .item-info .sub { font-size: 0.7rem; color: #aaa; display: flex; gap: 8px; margin-top: 4px; }
+        .album-tag { background: #1DB95410; color: #1DB954; padding: 2px 8px; border-radius: 20px; font-size: 0.65rem; font-weight: 600; }
+        .console-log { margin-top: 24px; background: #030303; border-radius: 20px; border: 1px solid #1e2a1a; padding: 14px 18px; font-family: 'Menlo', 'Fira Code', monospace; font-size: 0.7rem; color: #b0ffb0; display: none; max-height: 220px; overflow-y: auto; white-space: pre-wrap; word-break: break-word; letter-spacing: 0.3px; }
+        .console-log span { display: block; padding: 3px 0; border-bottom: 0.5px solid #1e3a1e; }
+        .footer { margin-top: 42px; text-align: center; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 28px; }
+        .love { font-size: 0.65rem; letter-spacing: 3px; color: #5a5a5a; }
+        .author-name { font-weight: 800; font-size: 0.8rem; margin-top: 6px; background: linear-gradient(135deg, #ddd, #fff); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+        .contact { font-size: 0.7rem; color: #1DB954; text-decoration: none; font-weight: 500; margin-top: 6px; display: inline-block; transition: 0.2s; }
+        .contact:hover { text-decoration: underline; opacity: 0.9; }
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-track { background: #111; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: #1DB954; border-radius: 10px; }
+        @media (max-width: 500px) { .controls { flex-direction: column; } .search-card { padding: 18px; } }
     </style>
 </head>
 <body>
-
 <div class="container">
     <div class="header">
-        <h1>Lyric Downloader</h1>
-        <p style="font-size: 0.6rem; letter-spacing: 2px; color: var(--accent);">INDEXED SEARCH ENGINE</p>
+        <h1>🎧 Lyric Downloader</h1>
+        <div class="badge">SYNCED LRC · INDEXED SEARCH</div>
     </div>
-
-    <div class="search-box">
+    <div class="search-card">
         <div class="controls">
-            <select id="mode">
-                <option value="track">Track</option>
-                <option value="album">Album</option>
+            <select id="modeSelect" class="mode-select">
+                <option value="track">🎵 Modo Track (una letra)</option>
+                <option value="album">💿 Modo Álbum (descarga masiva)</option>
             </select>
-            <input type="text" id="query" placeholder="Buscar artista, canción o álbum..." oninput="debounceSearch()">
+            <input type="text" id="searchQuery" class="search-input" placeholder="Buscar canción, artista o álbum..." autocomplete="off">
         </div>
         <div id="results"></div>
-        <div id="console" class="console"></div>
+        <div id="consolePanel" class="console-log"></div>
     </div>
+    <footer class="footer">
+        <div class="love">✧ MADE WITH LOVE ✧</div>
+        <div class="author-name">BY: BRYAN ROMERO GONZÁLEZ</div>
+        <a href="mailto:BROMEROG003@ALUMNO.UAEMEX.MX" class="contact">📧 BROMEROG003@ALUMNO.UAEMEX.MX</a>
+    </footer>
 </div>
-
-<footer>
-    <div style="font-size: 0.6rem; color: #444; letter-spacing: 2px;">MADE WITH LOVE</div>
-    <span class="author">BY: BRYAN ROMERO GONZÁLEZ</span>
-    <a href="mailto:BROMEROG003@ALUMNO.UAEMEX.MX" style="color:var(--accent); text-decoration:none; font-size:0.7rem;">BROMEROG003@ALUMNO.UAEMEX.MX</a>
-</footer>
-
 <script>
-    let timer;
-    const resultsBox = document.getElementById('results');
-    const consoleBox = document.getElementById('console');
+    const searchInput = document.getElementById('searchQuery');
+    const modeSelect = document.getElementById('modeSelect');
+    const resultsDiv = document.getElementById('results');
+    const consolePanel = document.getElementById('consolePanel');
+    let debounceTimeout = null;
 
-    function debounceSearch() {
-        clearTimeout(timer);
-        timer = setTimeout(search, 500);
+    function addLog(message, isError = false) {
+        const logEntry = document.createElement('span');
+        logEntry.textContent = `> ${message}`;
+        if (isError) { logEntry.style.color = '#ff8a7a'; logEntry.style.borderLeft = '3px solid #ff5555'; logEntry.style.paddingLeft = '8px'; } 
+        else { logEntry.style.color = '#b5ffb5'; }
+        consolePanel.appendChild(logEntry);
+        consolePanel.scrollTop = consolePanel.scrollHeight;
+        consolePanel.style.display = 'block';
     }
 
-    async function search() {
-        const q = document.getElementById('query').value;
-        const mode = document.getElementById('mode').value;
-        if(q.length < 3) { resultsBox.style.display = 'none'; return; }
+    function clearConsole() { consolePanel.innerHTML = ''; consolePanel.style.display = 'block'; }
+    const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
 
-        try {
-            // Busqueda indexada usando LRCLIB
-            const res = await fetch(`https://lrclib.net/api/search?q=${encodeURIComponent(q)}`);
-            const data = await res.json();
-            
-            resultsBox.innerHTML = '';
-            resultsBox.style.display = 'block';
-
-            // Filtrar y mostrar resultados únicos
-            const seen = new Set();
-            data.forEach(item => {
-                const identifier = mode === 'track' ? item.trackName + item.artistName : item.albumName + item.artistName;
-                if (!seen.has(identifier) && seen.size < 6) {
-                    seen.add(identifier);
-                    const div = document.createElement('div');
-                    div.className = 'item';
-                    div.onclick = () => processDownload(item, mode);
-                    div.innerHTML = `
-                        <img src="https://api.dicebear.com/7.x/identicon/svg?seed=${encodeURIComponent(item.albumName)}" alt="cover">
-                        <div class="item-info">
-                            <b>${mode === 'track' ? item.trackName : item.albumName}</b>
-                            <span>${item.artistName} • ${item.albumName || ''}</span>
-                        </div>
-                    `;
-                    resultsBox.appendChild(div);
-                }
-            });
-        } catch(e) { console.error("Error en búsqueda"); }
+    function getThumbnailUrl(albumName, artistName) {
+        const seed = encodeURIComponent((albumName || artistName || 'default').slice(0, 30));
+        return `https://api.dicebear.com/7.x/identicon/svg?seed=${seed}&backgroundColor=1a1a1a&size=52`;
     }
 
-    async function processDownload(item, mode) {
-        resultsBox.style.display = 'none';
-        consoleBox.style.display = 'block';
-        consoleBox.innerHTML = `> Obteniendo letras para ${mode}...<br>`;
-
+    async function performSearch() {
+        const query = searchInput.value.trim();
+        if (query.length < 2) { resultsDiv.style.display = 'none'; return; }
         try {
-            if (mode === 'track') {
-                await fetchAndSave(item.artistName, item.trackName);
-            } else {
-                // Para álbum, buscamos todos los tracks del mismo álbum en los resultados
-                consoleBox.innerHTML += `> Buscando pistas de ${item.albumName}...<br>`;
-                const res = await fetch(`https://lrclib.net/api/search?q=${encodeURIComponent(item.albumName + " " + item.artistName)}`);
-                const tracks = await res.json();
-                
-                for(const t of tracks) {
-                    if(t.albumName === item.albumName) {
-                        await fetchAndSave(t.artistName, t.trackName);
-                        await new Promise(r => setTimeout(r, 300)); // Evitar rate limit
-                    }
-                }
+            const searchUrl = `https://lrclib.net/api/search?q=${encodeURIComponent(query)}`;
+            const response = await fetch(searchUrl);
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            const data = await response.json();
+            if (!data || data.length === 0) {
+                resultsDiv.innerHTML = `<div style="padding: 20px; text-align:center; color:#aaa;">🎵 No se encontraron resultados.</div>`;
+                resultsDiv.style.display = 'block'; return;
             }
-            consoleBox.innerHTML += `> --- TAREA COMPLETADA ---<br>`;
-        } catch(e) {
-            consoleBox.innerHTML += `<span style="color:#ff4444">> ⚠️ Error al procesar descarga.</span><br>`;
+            const currentMode = modeSelect.value;
+            const uniqueMap = new Map();
+            for (const item of data) {
+                let key = currentMode === 'track' ? `${item.trackName?.toLowerCase()}|${item.artistName?.toLowerCase()}` : `${item.albumName?.toLowerCase()}|${item.artistName?.toLowerCase()}`;
+                if (!uniqueMap.has(key) && uniqueMap.size < 8) { uniqueMap.set(key, item); }
+            }
+            const resultsArray = Array.from(uniqueMap.values());
+            resultsDiv.innerHTML = '';
+            for (const item of resultsArray) {
+                const thumbUrl = getThumbnailUrl(item.albumName, item.artistName);
+                const resultItem = document.createElement('div');
+                resultItem.className = 'result-item';
+                resultItem.innerHTML = `<img class="thumb" src="${thumbUrl}"><div class="item-info"><strong>${escapeHtml(item.trackName)}</strong><div class="sub"><span>🎤 ${escapeHtml(item.artistName)}</span><span class="album-tag">📀 ${escapeHtml(item.albumName)}</span></div></div>`;
+                resultItem.addEventListener('click', (e) => { e.stopPropagation(); processItemByMode(item); });
+                resultsDiv.appendChild(resultItem);
+            }
+            resultsDiv.style.display = 'flex';
+        } catch (err) { resultsDiv.style.display = 'none'; }
+    }
+
+    function escapeHtml(str) { return str ? str.replace(/[&<>]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[m])) : ''; }
+
+    async function processItemByMode(item) {
+        const mode = modeSelect.value;
+        resultsDiv.style.display = 'none';
+        clearConsole();
+        addLog(`🚀 Iniciando modo ${mode === 'track' ? 'TRACK' : 'ÁLBUM'}`);
+        if (mode === 'track') { await downloadSingleTrack(item.artistName, item.trackName); addLog(`✨ Completado.`); } 
+        else {
+            const albumName = item.albumName; const artistName = item.artistName;
+            addLog(`🔍 Buscando canciones de: "${albumName}"...`);
+            try {
+                const res = await fetch(`https://lrclib.net/api/search?q=${encodeURIComponent(albumName + ' ' + artistName)}`);
+                const allTracks = await res.json();
+                const albumTracks = allTracks.filter(t => t.albumName?.toLowerCase() === albumName.toLowerCase() && t.artistName?.toLowerCase() === artistName.toLowerCase());
+                if (albumTracks.length === 0) { addLog(`⚠️ No se encontraron pistas.`, true); return; }
+                addLog(`📀 Encontradas ${albumTracks.length} canciones.`);
+                for (let idx = 0; idx < albumTracks.length; idx++) {
+                    const track = albumTracks[idx];
+                    addLog(`⬇️ [${idx+1}/${albumTracks.length}] ${track.trackName}`);
+                    await downloadSingleTrack(track.artistName, track.trackName, true);
+                    await delay(420);
+                }
+                addLog(`✅ Álbum completado.`);
+            } catch (err) { addLog(`❌ Error: ${err.message}`, true); }
         }
     }
 
-    async function fetchAndSave(artist, track) {
+    async function downloadSingleTrack(artist, trackName, silentMode = false) {
         try {
-            const res = await fetch(`https://lrclib.net/api/get?artist=${encodeURIComponent(artist)}&track_name=${encodeURIComponent(track)}`);
-            const data = await res.json();
-            if(data.syncedLyrics) {
-                const blob = new Blob([data.syncedLyrics], { type: 'text/plain' });
-                const a = document.createElement('a');
-                a.href = URL.createObjectURL(blob);
-                a.download = `${artist} - ${track}.lrc`;
-                a.click();
-                consoleBox.innerHTML += `> ✅ ${track} descargada.<br>`;
-            } else {
-                consoleBox.innerHTML += `> ❌ No hay sync para ${track}.<br>`;
-            }
-        } catch(e) { console.error("Error en track individual"); }
+            const response = await fetch(`https://lrclib.net/api/get?artist=${encodeURIComponent(artist)}&track_name=${encodeURIComponent(trackName)}`);
+            const lyricData = await response.json();
+            let finalLyrics = lyricData.syncedLyrics || lyricData.plainLyrics;
+            if (!finalLyrics) { if (!silentMode) addLog(`❌ Sin letra para ${trackName}`, true); return false; }
+            const blob = new Blob([finalLyrics], { type: 'text/plain;charset=utf-8' });
+            const filename = `${artist.replace(/[\\/:*?"<>|]/g, '-')} - ${trackName.replace(/[\\/:*?"<>|]/g, '-')}.lrc`;
+            const downloadLink = document.createElement('a');
+            downloadLink.href = URL.createObjectURL(blob); downloadLink.download = filename;
+            document.body.appendChild(downloadLink); downloadLink.click(); document.body.removeChild(downloadLink);
+            if (!silentMode) addLog(`✅ ${trackName} descargada.`);
+            return true;
+        } catch (err) { return false; }
     }
+
+    searchInput.addEventListener('input', () => {
+        if (debounceTimeout) clearTimeout(debounceTimeout);
+        debounceTimeout = setTimeout(() => performSearch(), 450);
+    });
 </script>
 </body>
 </html>
