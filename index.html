@@ -3,169 +3,88 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lyric Downloader | Sync Pro</title>
+    <title>Lyric Downloader Pro | Bryan Romero</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --bg: #050505;
-            --accent: #1DB954;
-            --glass: rgba(255, 255, 255, 0.05);
-            --border: rgba(255, 255, 255, 0.1);
-        }
-
-        body {
-            background-color: var(--bg);
-            color: white;
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            margin: 0;
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-            overflow-x: hidden;
-        }
-
-        .main-content {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
-
-        .card {
-            background: var(--glass);
-            backdrop-filter: blur(15px);
-            border: 1px solid var(--border);
-            padding: 40px;
-            border-radius: 28px;
-            width: 100%;
-            max-width: 450px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-        }
-
-        h1 { font-weight: 800; font-size: 2.2rem; margin-bottom: 8px; text-align: center; background: linear-gradient(to right, #fff, #666); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .tagline { text-align: center; color: #888; font-size: 0.9rem; margin-bottom: 35px; }
-
-        .input-group { margin-bottom: 20px; }
-        label { display: block; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; color: var(--accent); margin-bottom: 8px; }
-
-        input {
-            width: 100%;
-            padding: 14px 18px;
-            background: rgba(255,255,255,0.03);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            color: white;
-            font-size: 1rem;
-            box-sizing: border-box;
-            transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        input:focus { outline: none; border-color: var(--accent); background: rgba(255,255,255,0.07); }
-
-        button {
-            width: 100%;
-            padding: 16px;
-            background: var(--accent);
-            color: black;
-            border: none;
-            border-radius: 14px;
-            font-weight: 800;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: 0.3s;
-            margin-top: 10px;
-        }
-
-        button:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(29, 185, 84, 0.3); opacity: 0.9; }
-
-        #result {
-            margin-top: 25px;
-            padding: 15px;
-            border-radius: 12px;
-            font-size: 0.85rem;
-            display: none;
-            text-align: center;
-            border: 1px solid var(--border);
-        }
-
-        footer {
-            padding: 40px;
-            text-align: center;
-            border-top: 1px solid var(--border);
-            background: rgba(0,0,0,0.2);
-        }
-
-        .love { font-size: 0.65rem; color: #444; letter-spacing: 2px; margin-bottom: 10px; }
-        .name { font-weight: 800; font-size: 0.9rem; color: #eee; display: block; }
-        .contact { color: var(--accent); text-decoration: none; font-size: 0.75rem; display: inline-block; margin-top: 8px; font-weight: 600; }
+        :root { --bg: #0a0a0a; --accent: #1DB954; --card: #121212; --border: rgba(255,255,255,0.1); }
+        body { background: var(--bg); color: white; font-family: 'Plus Jakarta Sans', sans-serif; margin: 0; display: flex; flex-direction: column; min-height: 100vh; }
+        .container { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
+        .card { background: var(--card); border: 1px solid var(--border); padding: 40px; border-radius: 30px; width: 100%; max-width: 480px; box-shadow: 0 30px 60px rgba(0,0,0,0.5); }
+        h1 { font-weight: 800; font-size: 2rem; text-align: center; margin-bottom: 5px; background: linear-gradient(135deg, #fff 0%, #555 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .subtitle { text-align: center; color: #666; font-size: 0.8rem; letter-spacing: 1px; margin-bottom: 30px; text-transform: uppercase; }
+        .input-group { margin-bottom: 15px; }
+        label { display: block; font-size: 0.7rem; font-weight: 700; color: var(--accent); margin-bottom: 5px; margin-left: 5px; }
+        input, textarea { width: 100%; background: #1a1a1a; border: 1px solid var(--border); padding: 12px 15px; border-radius: 12px; color: white; box-sizing: border-box; font-family: inherit; }
+        textarea { height: 100px; resize: none; font-size: 0.9rem; }
+        button { width: 100%; padding: 15px; background: var(--accent); color: black; border: none; border-radius: 12px; font-weight: 800; cursor: pointer; transition: 0.3s; margin-top: 10px; }
+        button:hover { opacity: 0.9; transform: translateY(-2px); }
+        #log { margin-top: 20px; font-size: 0.75rem; color: #888; max-height: 100px; overflow-y: auto; padding: 10px; background: rgba(0,0,0,0.2); border-radius: 10px; display: none; }
+        footer { padding: 30px; text-align: center; font-size: 0.7rem; color: #444; border-top: 1px solid var(--border); }
+        .contact { color: var(--accent); text-decoration: none; font-weight: 600; }
     </style>
 </head>
 <body>
-
-<div class="main-content">
-    <div class="card">
-        <h1>Lyric Downloader</h1>
-        <p class="tagline">Sync Professional LRC Generator</p>
-
-        <div class="input-group">
-            <label>Artist</label>
-            <input type="text" id="artist" placeholder="Death">
+    <div class="container">
+        <div class="card">
+            <h1>Lyric Downloader</h1>
+            <p class="subtitle">Album & Track Sync Pro</p>
+            
+            <div class="input-group">
+                <label>ARTISTA</label>
+                <input type="text" id="artist" placeholder="Ej: Death">
+            </div>
+            
+            <div class="input-group">
+                <label>LISTA DE CANCIONES (Una por línea para álbum)</label>
+                <textarea id="tracklist" placeholder="Zombie Ritual&#10;Evil Dead&#10;Baptized in Blood"></textarea>
+            </div>
+            
+            <button onclick="processAlbum()">DESCARGAR LYRICS SINCRONIZADAS</button>
+            <div id="log"></div>
         </div>
-
-        <div class="input-group">
-            <label>Track Name</label>
-            <input type="text" id="track" placeholder="Zombie Ritual">
-        </div>
-
-        <button onclick="downloadLyrics()">GET SYNCED LYRICS</button>
-
-        <div id="result"></div>
     </div>
-</div>
+    <footer>
+        <div style="letter-spacing: 2px; margin-bottom: 5px;">MADE WITH LOVE</div>
+        <div style="color: #eee; font-weight: 700; margin-bottom: 10px;">BY: BRYAN ROMERO GONZÁLEZ</div>
+        <a href="mailto:BROMEROG003@ALUMNO.UAEMEX.MX" class="contact">BROMEROG003@ALUMNO.UAEMEX.MX</a>
+    </footer>
 
-<footer>
-    <div class="love">MADE WITH LOVE</div>
-    <span class="name">BY: BRYAN ROMERO GONZÁLEZ</span>
-    <a href="mailto:BROMEROG003@ALUMNO.UAEMEX.MX" class="contact">BROMEROG003@ALUMNO.UAEMEX.MX</a>
-</footer>
+    <script>
+        async function processAlbum() {
+            const artist = document.getElementById('artist').value;
+            const lines = document.getElementById('tracklist').value.split('\n').filter(l => l.trim() !== "");
+            const log = document.getElementById('log');
+            
+            if(!artist || lines.length === 0) return alert("Llena el artista y al menos una canción");
+            
+            log.style.display = "block";
+            log.innerHTML = "Iniciando proceso por lotes...<br>";
 
-<script>
-    async function downloadLyrics() {
-        const artist = document.getElementById('artist').value;
-        const track = document.getElementById('track').value;
-        const resDiv = document.getElementById('result');
-
-        if (!artist || !track) return alert("Please fill all fields");
-
-        resDiv.style.display = "block";
-        resDiv.style.color = "#888";
-        resDiv.innerHTML = "Searching in LRCLIB database...";
-
-        try {
-            const res = await fetch(`https://lrclib.net/api/get?artist=${encodeURIComponent(artist)}&track_name=${encodeURIComponent(track)}`);
-            const data = await res.json();
-
-            if (data.syncedLyrics) {
-                resDiv.style.color = "#1DB954";
-                resDiv.innerHTML = "✅ Synced lyrics found! Downloading...";
-                
-                const blob = new Blob([data.syncedLyrics], { type: 'text/plain' });
-                const url = window.URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `${artist} - ${track}.lrc`;
-                a.click();
-            } else {
-                resDiv.style.color = "#ff4444";
-                resDiv.innerHTML = "❌ No synced lyrics available for this track.";
+            for(let track of lines) {
+                track = track.trim();
+                log.innerHTML += `Buscando: ${track}... `;
+                try {
+                    const res = await fetch(`https://lrclib.net/api/get?artist=${encodeURIComponent(artist)}&track_name=${encodeURIComponent(track)}`);
+                    const data = await res.json();
+                    
+                    if(data.syncedLyrics) {
+                        const blob = new Blob([data.syncedLyrics], { type: 'text/plain' });
+                        const a = document.createElement('a');
+                        a.href = URL.createObjectURL(blob);
+                        a.download = `${artist} - ${track}.lrc`;
+                        a.click();
+                        log.innerHTML += "<span style='color:#1DB954'>✅ OK</span><br>";
+                    } else {
+                        log.innerHTML += "<span style='color:#ff4444'>❌ No sync</span><br>";
+                    }
+                } catch(e) {
+                    log.innerHTML += "<span style='color:#ff4444'>⚠️ Error</span><br>";
+                }
+                // Pequeña pausa para evitar bloqueo de API
+                await new Promise(r => setTimeout(r, 500));
             }
-        } catch (e) {
-            resDiv.innerHTML = "❌ Connection error.";
+            log.innerHTML += "--- PROCESO FINALIZADO ---";
         }
-    }
-</script>
-
+    </script>
 </body>
 </html>
