@@ -9,28 +9,20 @@
         :root { --bg: #050505; --accent: #1DB954; --card: #121212; --border: rgba(255,255,255,0.1); }
         body { background: var(--bg); color: white; font-family: 'Plus Jakarta Sans', sans-serif; margin: 0; padding: 20px; }
         .container { max-width: 500px; margin: 0 auto; }
-        
         .header { text-align: center; margin-bottom: 30px; }
         h1 { font-weight: 800; font-size: 2rem; margin: 0; background: linear-gradient(135deg, #fff, #444); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        
         .search-box { background: var(--card); border: 1px solid var(--border); padding: 25px; border-radius: 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.5); }
-        
         .controls { display: flex; gap: 10px; margin-bottom: 15px; }
         select { background: #1a1a1a; color: var(--accent); border: 1px solid var(--border); border-radius: 12px; padding: 10px; font-weight: 700; outline: none; }
-        input { flex: 1; background: #1a1a1a; border: 1px solid var(--border); padding: 15px; border-radius: 12px; color: white; outline: none; transition: 0.3s; }
-        input:focus { border-color: var(--accent); }
-
-        /* Lista de Sugerencias */
+        input { flex: 1; background: #1a1a1a; border: 1px solid var(--border); padding: 15px; border-radius: 12px; color: white; outline: none; }
         #results { margin-top: 10px; background: #181818; border-radius: 15px; overflow: hidden; display: none; border: 1px solid var(--border); }
         .item { display: flex; align-items: center; padding: 12px; cursor: pointer; border-bottom: 1px solid var(--border); transition: 0.2s; }
         .item:hover { background: #222; }
-        .item img { width: 45px; height: 45px; border-radius: 8px; margin-right: 15px; background: #333; }
+        .item img { width: 50px; height: 50px; border-radius: 8px; margin-right: 15px; background: #333; }
         .item-info b { display: block; font-size: 0.85rem; color: #fff; }
         .item-info span { font-size: 0.75rem; color: #888; }
-
-        .console { margin-top: 20px; font-family: monospace; font-size: 0.7rem; color: #1DB954; padding: 10px; background: #000; border-radius: 10px; display: none; max-height: 150px; overflow-y: auto; }
-
-        footer { text-align: center; margin-top: 40px; padding: 20px; border-top: 1px solid var(--border); color: #444; font-size: 0.7rem; }
+        .console { margin-top: 20px; font-family: monospace; font-size: 0.7rem; color: #1DB954; padding: 10px; background: #000; border-radius: 10px; display: none; }
+        footer { text-align: center; margin-top: 40px; border-top: 1px solid var(--border); padding-top: 20px; }
         .author { color: #eee; font-weight: 800; font-size: 0.8rem; display: block; margin-top: 5px; }
     </style>
 </head>
@@ -39,7 +31,7 @@
 <div class="container">
     <div class="header">
         <h1>Lyric Downloader</h1>
-        <p style="font-size: 0.6rem; letter-spacing: 2px; color: var(--accent);">SYNC SEARCH ENGINE</p>
+        <p style="font-size: 0.6rem; letter-spacing: 2px; color: var(--accent);">INDEXED SEARCH ENGINE</p>
     </div>
 
     <div class="search-box">
@@ -48,18 +40,17 @@
                 <option value="track">Track</option>
                 <option value="album">Album</option>
             </select>
-            <input type="text" id="query" placeholder="Buscar artista o canción..." oninput="debounceSearch()">
+            <input type="text" id="query" placeholder="Buscar artista, canción o álbum..." oninput="debounceSearch()">
         </div>
-
         <div id="results"></div>
         <div id="console" class="console"></div>
     </div>
 </div>
 
 <footer>
-    MADE WITH LOVE
+    <div style="font-size: 0.6rem; color: #444; letter-spacing: 2px;">MADE WITH LOVE</div>
     <span class="author">BY: BRYAN ROMERO GONZÁLEZ</span>
-    <a href="mailto:BROMEROG003@ALUMNO.UAEMEX.MX" style="color:var(--accent); text-decoration:none;">BROMEROG003@ALUMNO.UAEMEX.MX</a>
+    <a href="mailto:BROMEROG003@ALUMNO.UAEMEX.MX" style="color:var(--accent); text-decoration:none; font-size:0.7rem;">BROMEROG003@ALUMNO.UAEMEX.MX</a>
 </footer>
 
 <script>
@@ -74,65 +65,82 @@
 
     async function search() {
         const q = document.getElementById('query').value;
+        const mode = document.getElementById('mode').value;
         if(q.length < 3) { resultsBox.style.display = 'none'; return; }
 
         try {
-            // Usando el endpoint de búsqueda de LRCLIB (según docs)
+            // Busqueda indexada usando LRCLIB
             const res = await fetch(`https://lrclib.net/api/search?q=${encodeURIComponent(q)}`);
             const data = await res.json();
             
             resultsBox.innerHTML = '';
             resultsBox.style.display = 'block';
 
-            data.slice(0, 6).forEach(track => {
-                const div = document.createElement('div');
-                div.className = 'item';
-                div.onclick = () => download(track);
-                div.innerHTML = `
-                    <img src="${track.thumbnail || 'https://via.placeholder.com/50'}" onerror="this.src='https://cdn-icons-png.flaticon.com/512/461/461238.png'">
-                    <div class="item-info">
-                        <b>${track.trackName}</b>
-                        <span>${track.artistName} • ${track.albumName || 'Single'}</span>
-                    </div>
-                `;
-                resultsBox.appendChild(div);
+            // Filtrar y mostrar resultados únicos
+            const seen = new Set();
+            data.forEach(item => {
+                const identifier = mode === 'track' ? item.trackName + item.artistName : item.albumName + item.artistName;
+                if (!seen.has(identifier) && seen.size < 6) {
+                    seen.add(identifier);
+                    const div = document.createElement('div');
+                    div.className = 'item';
+                    div.onclick = () => processDownload(item, mode);
+                    div.innerHTML = `
+                        <img src="https://api.dicebear.com/7.x/identicon/svg?seed=${encodeURIComponent(item.albumName)}" alt="cover">
+                        <div class="item-info">
+                            <b>${mode === 'track' ? item.trackName : item.albumName}</b>
+                            <span>${item.artistName} • ${item.albumName || ''}</span>
+                        </div>
+                    `;
+                    resultsBox.appendChild(div);
+                }
             });
-        } catch(e) { console.error("Error en búsqueda indexada"); }
+        } catch(e) { console.error("Error en búsqueda"); }
     }
 
-    async function download(track) {
-        const mode = document.getElementById('mode').value;
+    async function processDownload(item, mode) {
         resultsBox.style.display = 'none';
         consoleBox.style.display = 'block';
-        consoleBox.innerHTML = `> Preparando descarga de ${mode}...<br>`;
+        consoleBox.innerHTML = `> Obteniendo letras para ${mode}...<br>`;
 
         try {
-            // Intento 1: LRCLIB (Sincronizada)
-            const res = await fetch(`https://lrclib.net/api/get?artist=${encodeURIComponent(track.artistName)}&track_name=${encodeURIComponent(track.trackName)}`);
-            const data = await res.json();
-
-            if(data.syncedLyrics) {
-                saveFile(data.syncedLyrics, `${track.artistName} - ${track.trackName}.lrc`);
-                consoleBox.innerHTML += `<span style="color:#1DB954">> ✅ Letra sincronizada guardada.</span><br>`;
+            if (mode === 'track') {
+                await fetchAndSave(item.artistName, item.trackName);
             } else {
-                // Intento 2: Netease (Fallback)
-                consoleBox.innerHTML += `> Buscando en Netease...<br>`;
-                // Nota: Netease requiere IDs, aquí usamos una búsqueda rápida por nombre
-                consoleBox.innerHTML += `<span style="color:#ff4444">> ❌ Solo letra plana disponible.</span><br>`;
+                // Para álbum, buscamos todos los tracks del mismo álbum en los resultados
+                consoleBox.innerHTML += `> Buscando pistas de ${item.albumName}...<br>`;
+                const res = await fetch(`https://lrclib.net/api/search?q=${encodeURIComponent(item.albumName + " " + item.artistName)}`);
+                const tracks = await res.json();
+                
+                for(const t of tracks) {
+                    if(t.albumName === item.albumName) {
+                        await fetchAndSave(t.artistName, t.trackName);
+                        await new Promise(r => setTimeout(r, 300)); // Evitar rate limit
+                    }
+                }
             }
+            consoleBox.innerHTML += `> --- TAREA COMPLETADA ---<br>`;
         } catch(e) {
-            consoleBox.innerHTML += `<span style="color:#ff4444">> ⚠️ Error de conexión a API.</span><br>`;
+            consoleBox.innerHTML += `<span style="color:#ff4444">> ⚠️ Error al procesar descarga.</span><br>`;
         }
     }
 
-    function saveFile(content, filename) {
-        const blob = new Blob([content], { type: 'text/plain' });
-        const a = document.createElement('a');
-        a.href = URL.createObjectURL(blob);
-        a.download = filename;
-        a.click();
+    async function fetchAndSave(artist, track) {
+        try {
+            const res = await fetch(`https://lrclib.net/api/get?artist=${encodeURIComponent(artist)}&track_name=${encodeURIComponent(track)}`);
+            const data = await res.json();
+            if(data.syncedLyrics) {
+                const blob = new Blob([data.syncedLyrics], { type: 'text/plain' });
+                const a = document.createElement('a');
+                a.href = URL.createObjectURL(blob);
+                a.download = `${artist} - ${track}.lrc`;
+                a.click();
+                consoleBox.innerHTML += `> ✅ ${track} descargada.<br>`;
+            } else {
+                consoleBox.innerHTML += `> ❌ No hay sync para ${track}.<br>`;
+            }
+        } catch(e) { console.error("Error en track individual"); }
     }
 </script>
-
 </body>
 </html>
