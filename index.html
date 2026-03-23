@@ -3,54 +3,131 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lyric Downloader | BR</title>
+    <title>Lyric Downloader</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { background: #050505; font-family: system-ui, -apple-system, sans-serif; color: #fff; padding: 20px; }
-        .container { max-width: 600px; margin: 0 auto; }
-        h1 { font-size: 1.5rem; color: #1DB954; text-align: center; margin-bottom: 5px; }
-        .sub { text-align: center; font-size: 0.7rem; color: #666; margin-bottom: 20px; }
-        .card { background: #121212; border-radius: 20px; padding: 20px; border: 1px solid #2a2a2a; }
-        .mode { display: flex; gap: 10px; margin-bottom: 15px; }
-        .mode-btn { flex: 1; padding: 10px; background: #1e1e1e; border: none; border-radius: 30px; color: #888; font-weight: bold; cursor: pointer; }
-        .mode-btn.active { background: #1DB954; color: #000; }
-        .search { display: flex; gap: 8px; margin-bottom: 20px; }
-        .search input { flex: 1; padding: 12px; background: #1e1e1e; border: 1px solid #333; border-radius: 30px; color: #fff; font-size: 1rem; }
-        .search button { padding: 12px 20px; background: #1DB954; border: none; border-radius: 30px; color: #000; font-weight: bold; cursor: pointer; }
-        .results { display: none; flex-direction: column; gap: 10px; max-height: 400px; overflow-y: auto; }
-        .item { background: #1a1a1a; padding: 12px; border-radius: 12px; border: 1px solid #2a2a2a; }
-        .item-title { font-weight: bold; margin-bottom: 4px; }
-        .item-artist { color: #1DB954; font-size: 0.8rem; margin-bottom: 4px; }
-        .item-album { color: #888; font-size: 0.7rem; margin-bottom: 10px; }
-        .btn-download { background: #1DB954; border: none; padding: 8px 16px; border-radius: 20px; color: #000; font-weight: bold; cursor: pointer; width: 100%; margin-top: 5px; }
-        .btn-album { background: #9b59b6; color: #fff; }
-        .console { background: #0a0a0a; border-radius: 12px; padding: 10px; margin-top: 15px; font-family: monospace; font-size: 0.7rem; color: #1DB954; max-height: 150px; overflow-y: auto; display: none; }
-        .log-line { padding: 3px 0; border-bottom: 1px solid #1e3a1e; }
-        .footer { text-align: center; margin-top: 20px; font-size: 0.6rem; color: #444; }
-        .footer .name { color: #1DB954; margin: 5px 0; }
+        body { 
+            background: #000; 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; 
+            padding: 16px; 
+            min-height: 100vh;
+        }
+        .container { max-width: 500px; margin: 0 auto; }
+        
+        /* Header */
+        .header { text-align: center; margin-bottom: 24px; }
+        h1 { color: #1DB954; font-size: 1.8rem; margin-bottom: 4px; }
+        .sub { color: #666; font-size: 0.7rem; }
+        
+        /* Buscador */
+        .search-box { 
+            background: #111; 
+            padding: 16px; 
+            border-radius: 20px; 
+            margin-bottom: 20px;
+            border: 1px solid #222;
+        }
+        .mode {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .mode-btn {
+            flex: 1;
+            padding: 10px;
+            background: #1a1a1a;
+            border: none;
+            border-radius: 30px;
+            color: #888;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .mode-btn.active {
+            background: #1DB954;
+            color: #000;
+        }
+        .search-input {
+            width: 100%;
+            padding: 12px;
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 30px;
+            color: #fff;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+        .search-btn {
+            width: 100%;
+            padding: 12px;
+            background: #1DB954;
+            border: none;
+            border-radius: 30px;
+            color: #000;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        
+        /* Resultados */
+        .results { margin-top: 16px; display: none; }
+        .result-card {
+            background: #111;
+            border: 1px solid #222;
+            border-radius: 16px;
+            padding: 14px;
+            margin-bottom: 10px;
+        }
+        .song-name { font-weight: bold; font-size: 1rem; margin-bottom: 4px; color: #fff; }
+        .artist-name { color: #1DB954; font-size: 0.85rem; margin-bottom: 4px; }
+        .album-name { color: #666; font-size: 0.75rem; margin-bottom: 12px; }
+        .track-count { background: #1DB95420; color: #1DB954; padding: 2px 8px; border-radius: 12px; font-size: 0.7rem; margin-left: 6px; }
+        .download-link {
+            display: inline-block;
+            background: #1DB954;
+            color: #000;
+            text-decoration: none;
+            padding: 10px 16px;
+            border-radius: 30px;
+            font-weight: bold;
+            font-size: 0.9rem;
+            text-align: center;
+            width: 100%;
+            margin-top: 8px;
+        }
+        .download-link.album {
+            background: #9b59b6;
+            color: #fff;
+        }
+        
+        /* Loading */
         .loading { text-align: center; padding: 20px; color: #1DB954; }
-        @media (max-width: 500px) { .search { flex-direction: column; } }
+        
+        /* Footer */
+        .footer { text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #222; font-size: 0.6rem; color: #444; }
+        .footer .name { color: #1DB954; margin: 5px 0; }
+        
+        /* Scroll */
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-thumb { background: #1DB954; border-radius: 10px; }
     </style>
 </head>
 <body>
 <div class="container">
-    <h1>🎵 LYRIC DOWNLOADER</h1>
-    <div class="sub">SYNCED LRC · GUARDAR MANUAL</div>
-
-    <div class="card">
-        <div class="mode">
-            <button id="modeTrack" class="mode-btn active">🎤 CANCIÓN</button>
-            <button id="modeAlbum" class="mode-btn">💿 ÁLBUM</button>
-        </div>
-        
-        <div class="search">
-            <input type="text" id="searchInput" placeholder="Buscar canción o álbum..." autocomplete="off">
-            <button id="searchBtn">BUSCAR</button>
-        </div>
-        
-        <div id="results"></div>
-        <div id="console"></div>
+    <div class="header">
+        <h1>🎵 LYRIC DOWNLOADER</h1>
+        <div class="sub">Mantén presionado el enlace para guardar</div>
     </div>
+    
+    <div class="search-box">
+        <div class="mode">
+            <button id="modeTrack" class="mode-btn active">🎤 Canción</button>
+            <button id="modeAlbum" class="mode-btn">💿 Álbum</button>
+        </div>
+        <input type="text" id="searchInput" class="search-input" placeholder="Buscar... ej: Blinding Lights" autocomplete="off">
+        <button id="searchBtn" class="search-btn">🔍 Buscar</button>
+    </div>
+    
+    <div id="results" class="results"></div>
     
     <div class="footer">
         <div>✧ MADE WITH LOVE ✧</div>
@@ -62,13 +139,11 @@
 <script>
     let modo = 'track';
     
-    // Elementos
     const modeTrack = document.getElementById('modeTrack');
     const modeAlbum = document.getElementById('modeAlbum');
     const searchInput = document.getElementById('searchInput');
     const searchBtn = document.getElementById('searchBtn');
     const resultsDiv = document.getElementById('results');
-    const consoleDiv = document.getElementById('console');
     
     // Cambiar modo
     modeTrack.onclick = () => {
@@ -85,136 +160,126 @@
         resultsDiv.style.display = 'none';
     };
     
-    // Log
-    function log(msg, error = false) {
-        consoleDiv.style.display = 'block';
-        const line = document.createElement('div');
-        line.className = 'log-line';
-        line.style.color = error ? '#ff8888' : '#1DB954';
-        line.textContent = `> ${msg}`;
-        consoleDiv.appendChild(line);
-        consoleDiv.scrollTop = consoleDiv.scrollHeight;
+    // Función para crear enlace de descarga visible
+    function createDownloadLink(artist, track, lyrics) {
+        const blob = new Blob([lyrics], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const filename = `${artist} - ${track}.lrc`.replace(/[\\/:*?"<>|]/g, '-');
+        
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = filename;
+        link.textContent = `📥 ${filename}`;
+        link.className = 'download-link';
+        link.onclick = (e) => {
+            // No prevenir default, dejamos que funcione el link
+            setTimeout(() => URL.revokeObjectURL(url), 1000);
+        };
+        return link;
     }
     
-    function clearLog() {
-        consoleDiv.innerHTML = '';
-        consoleDiv.style.display = 'none';
-    }
-    
-    // MOSTRAR LETRA EN NUEVA VENTANA (para guardar manual)
-    function showLyrics(artist, track, lyrics) {
-        const ventana = window.open();
-        ventana.document.write(`
-            <!DOCTYPE html>
-            <html>
-            <head>
-                <title>${artist} - ${track}</title>
-                <meta charset="UTF-8">
-                <style>
-                    body { background: #0a0a0a; color: #1DB954; font-family: monospace; padding: 20px; white-space: pre-wrap; font-size: 14px; line-height: 1.6; }
-                    pre { background: #111; padding: 20px; border-radius: 12px; overflow-x: auto; }
-                    .info { color: #fff; margin-bottom: 20px; padding: 10px; background: #1a1a1a; border-radius: 8px; }
-                    button { background: #1DB954; border: none; padding: 10px 20px; border-radius: 8px; color: #000; font-weight: bold; cursor: pointer; margin-top: 10px; }
-                </style>
-            </head>
-            <body>
-                <div class="info">
-                    <strong>🎤 ${artist}</strong><br>
-                    <strong>🎵 ${track}</strong><br>
-                    <small>💡 Selecciona todo (Ctrl+A) y guarda como archivo .lrc</small>
-                </div>
-                <pre>${lyrics}</pre>
-                <button onclick="navigator.clipboard.writeText(document.querySelector('pre').innerText); alert('¡Letra copiada! Ahora pégalo en un bloc de notas y guarda como .lrc')">📋 COPIAR AL PORTAPAPELES</button>
-                <br><br>
-                <small>📁 Para guardar: Selecciona todo (Ctrl+A) → Copiar → Pegar en bloc de notas → Guardar como "artista - cancion.lrc"</small>
-            </body>
-            </html>
-        `);
-        ventana.document.close();
-        log(`📄 Letra de "${track}" abierta en nueva pestaña - Copia y guarda`);
-    }
-    
-    // Obtener letra
-    async function getAndShowLyrics(artist, track) {
-        log(`🔍 Buscando: ${track} - ${artist}`);
+    // Obtener letra y mostrar enlace
+    async function getLyrics(artist, track) {
         try {
             const url = `https://lrclib.net/api/get?artist=${encodeURIComponent(artist)}&track_name=${encodeURIComponent(track)}`;
             const res = await fetch(url);
-            if (!res.ok) {
-                log(`❌ No encontrado: ${track}`, true);
-                return false;
-            }
+            if (!res.ok) throw new Error('No encontrado');
             const data = await res.json();
             const lyrics = data.syncedLyrics || data.plainLyrics;
-            
-            if (!lyrics || lyrics.trim() === '') {
-                log(`❌ Sin letra disponible: ${track}`, true);
-                return false;
-            }
-            
-            showLyrics(artist, track, lyrics);
-            return true;
+            if (!lyrics) throw new Error('Sin letra');
+            return lyrics;
         } catch (err) {
-            log(`❌ Error: ${err.message}`, true);
-            return false;
+            return null;
         }
     }
     
-    // Descargar álbum completo (uno por uno)
-    async function downloadAlbum(albumName, artistName) {
-        resultsDiv.style.display = 'none';
-        clearLog();
-        log(`💿 ÁLBUM: ${albumName} - ${artistName}`);
-        log(`🔍 Buscando canciones...`);
+    // Mostrar resultado de canción
+    async function showTrackResult(item) {
+        const card = document.createElement('div');
+        card.className = 'result-card';
+        card.innerHTML = `
+            <div class="song-name">${escapeHtml(item.trackName || '?')}</div>
+            <div class="artist-name">🎤 ${escapeHtml(item.artistName || '?')}</div>
+            <div class="album-name">💿 ${escapeHtml(item.albumName || 'Single')}</div>
+            <div id="link-${Date.now()}" style="margin-top: 8px;"></div>
+        `;
         
-        try {
-            const searchUrl = `https://lrclib.net/api/search?q=${encodeURIComponent(albumName + ' ' + artistName)}`;
-            const res = await fetch(searchUrl);
-            const data = await res.json();
-            
-            const tracks = data.filter(t => 
-                t.albumName && t.albumName.toLowerCase() === albumName.toLowerCase() &&
-                t.artistName && t.artistName.toLowerCase() === artistName.toLowerCase()
-            );
-            
-            if (tracks.length === 0) {
-                log(`❌ No se encontraron canciones`, true);
-                return;
+        const linkContainer = card.querySelector('[id^="link-"]');
+        linkContainer.innerHTML = '<div style="color:#888; text-align:center;">⏳ Cargando letra...</div>';
+        
+        resultsDiv.appendChild(card);
+        
+        const lyrics = await getLyrics(item.artistName, item.trackName);
+        
+        if (lyrics) {
+            const link = createDownloadLink(item.artistName, item.trackName, lyrics);
+            linkContainer.innerHTML = '';
+            linkContainer.appendChild(link);
+        } else {
+            linkContainer.innerHTML = '<div style="color:#ff8888; text-align:center;">❌ Letra no disponible</div>';
+        }
+    }
+    
+    // Mostrar resultado de álbum
+    async function showAlbumResult(item) {
+        const card = document.createElement('div');
+        card.className = 'result-card';
+        
+        // Buscar tracks del álbum
+        const searchUrl = `https://lrclib.net/api/search?q=${encodeURIComponent(item.albumName + ' ' + item.artistName)}`;
+        const res = await fetch(searchUrl);
+        const data = await res.json();
+        const tracks = data.filter(t => 
+            t.albumName?.toLowerCase() === item.albumName?.toLowerCase() &&
+            t.artistName?.toLowerCase() === item.artistName?.toLowerCase()
+        );
+        
+        card.innerHTML = `
+            <div class="song-name">💿 ${escapeHtml(item.albumName || '?')}</div>
+            <div class="artist-name">🎤 ${escapeHtml(item.artistName || '?')}</div>
+            <div class="album-name">📅 ${escapeHtml(item.albumYear || 'Año N/D')} <span class="track-count">${tracks.length} canciones</span></div>
+            <div id="album-links-${Date.now()}"></div>
+        `;
+        
+        const linksContainer = card.querySelector('[id^="album-links-"]');
+        linksContainer.innerHTML = '<div style="color:#888; text-align:center;">⏳ Cargando ${tracks.length} canciones...</div>';
+        
+        resultsDiv.appendChild(card);
+        
+        // Cargar cada canción
+        linksContainer.innerHTML = '';
+        let count = 0;
+        
+        for (const track of tracks) {
+            const lyrics = await getLyrics(track.artistName, track.trackName);
+            if (lyrics) {
+                const link = createDownloadLink(track.artistName, track.trackName, lyrics);
+                link.style.marginBottom = '8px';
+                linksContainer.appendChild(link);
+                count++;
+            } else {
+                const errorDiv = document.createElement('div');
+                errorDiv.textContent = `❌ ${track.trackName} - no disponible`;
+                errorDiv.style.color = '#ff8888';
+                errorDiv.style.fontSize = '0.7rem';
+                errorDiv.style.padding = '4px 0';
+                linksContainer.appendChild(errorDiv);
             }
-            
-            log(`📀 Encontradas ${tracks.length} canciones`);
-            log(`⏳ Abriendo cada letra en nueva pestaña...`);
-            log(`━━━━━━━━━━━━━━━━━━━━━━`);
-            
-            let count = 0;
-            for (let i = 0; i < tracks.length; i++) {
-                const track = tracks[i];
-                log(`[${i+1}/${tracks.length}] ${track.trackName}`);
-                const ok = await getAndShowLyrics(track.artistName, track.trackName);
-                if (ok) count++;
-                await new Promise(r => setTimeout(r, 800));
-            }
-            
-            log(`━━━━━━━━━━━━━━━━━━━━━━`);
-            log(`✅ Completado: ${count}/${tracks.length} letras mostradas`);
-            log(`💡 Cada letra se abrió en una pestaña nueva - Copia y guarda`);
-            
-        } catch (err) {
-            log(`❌ Error: ${err.message}`, true);
+            await new Promise(r => setTimeout(r, 300));
+        }
+        
+        if (count === 0) {
+            linksContainer.innerHTML = '<div style="color:#ff8888; text-align:center;">❌ Ninguna letra disponible</div>';
         }
     }
     
     // Buscar
     async function search() {
         const query = searchInput.value.trim();
-        if (query.length < 2) {
-            log('Escribe al menos 2 caracteres', true);
-            return;
-        }
+        if (query.length < 2) return;
         
-        resultsDiv.style.display = 'flex';
-        resultsDiv.innerHTML = '<div class="loading">🔍 BUSCANDO...</div>';
-        clearLog();
+        resultsDiv.style.display = 'block';
+        resultsDiv.innerHTML = '<div class="loading">🔍 Buscando...</div>';
         
         try {
             const url = `https://lrclib.net/api/search?q=${encodeURIComponent(query)}`;
@@ -222,7 +287,7 @@
             const data = await res.json();
             
             if (!data || data.length === 0) {
-                resultsDiv.innerHTML = '<div class="loading">🎵 SIN RESULTADOS</div>';
+                resultsDiv.innerHTML = '<div class="loading">🎵 No se encontraron resultados</div>';
                 return;
             }
             
@@ -235,43 +300,25 @@
                 } else {
                     key = `${item.albumName}|${item.artistName}`;
                 }
-                if (!unique.has(key.toLowerCase()) && unique.size < 10) {
-                    unique.set(key.toLowerCase(), item);
+                if (!unique.has(key?.toLowerCase()) && unique.size < 8) {
+                    unique.set(key?.toLowerCase(), item);
                 }
             }
             
             resultsDiv.innerHTML = '';
             
             for (const item of unique.values()) {
-                const card = document.createElement('div');
-                card.className = 'item';
-                
                 if (modo === 'track') {
-                    card.innerHTML = `
-                        <div class="item-title">${escapeHtml(item.trackName || '?')}</div>
-                        <div class="item-artist">🎤 ${escapeHtml(item.artistName || '?')}</div>
-                        <div class="item-album">💿 ${escapeHtml(item.albumName || 'Single')}</div>
-                        <button class="btn-download">📥 VER LETRA Y GUARDAR</button>
-                    `;
-                    const btn = card.querySelector('button');
-                    btn.onclick = () => getAndShowLyrics(item.artistName, item.trackName);
+                    await showTrackResult(item);
                 } else {
-                    card.innerHTML = `
-                        <div class="item-title">💿 ${escapeHtml(item.albumName || '?')}</div>
-                        <div class="item-artist">🎤 ${escapeHtml(item.artistName || '?')}</div>
-                        <div class="item-album">📅 ${escapeHtml(item.albumYear || 'Año N/A')}</div>
-                        <button class="btn-download btn-album">💿 VER TODAS LAS LETRAS DEL ÁLBUM</button>
-                    `;
-                    const btn = card.querySelector('button');
-                    btn.onclick = () => downloadAlbum(item.albumName, item.artistName);
+                    if (item.albumName) {
+                        await showAlbumResult(item);
+                    }
                 }
-                
-                resultsDiv.appendChild(card);
             }
             
         } catch (err) {
-            resultsDiv.innerHTML = '<div class="loading">⚠️ ERROR DE CONEXIÓN</div>';
-            log(`Error: ${err.message}`, true);
+            resultsDiv.innerHTML = '<div class="loading">⚠️ Error de conexión</div>';
         }
     }
     
@@ -288,11 +335,6 @@
     // Eventos
     searchBtn.onclick = search;
     searchInput.onkeypress = (e) => { if (e.key === 'Enter') search(); };
-    
-    log('🎵 LYRIC DOWNLOADER LISTO');
-    log('💡 Busca una canción o álbum');
-    log('📄 Al hacer clic, la letra se abrirá en una nueva pestaña');
-    log('📁 Copia el texto y guárdalo como archivo .lrc');
 </script>
 </body>
 </html>
